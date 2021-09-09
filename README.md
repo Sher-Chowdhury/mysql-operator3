@@ -123,16 +123,21 @@ Next we define a new "kind", aka custom-resource.
 
 ```
 $ operator-sdk create api --group cache --version v1alpha1 --kind Mysql --resource --controller       # kinds need to start with an uppercase
-  Writing scaffold for you to edit...
-  api/v1alpha1/mysql_types.go
-  controllers/mysql_controller.go
-  Running make:
-  $ make
-  /Users/sherchowdhury/github/mysql-operator2/mysql-operator2/bin/controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./..."
-  go fmt ./...
-  go vet ./...
-  go build -o bin/manager main.go
+Writing kustomize manifests for you to edit...
+Writing scaffold for you to edit...
+api/v1alpha1/mysql_types.go
+controllers/mysql_controller.go
+Update dependencies:
+$ go mod tidy
+Running make:
+$ make generate
+go: creating new go.mod: module tmp
+Downloading sigs.k8s.io/controller-tools/cmd/controller-gen@v0.4.1
+go get: added sigs.k8s.io/controller-tools v0.4.1
+/Users/sherchowdhury/github/mysql-operator3/bin/controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./..."
 ```
+
+(git commit no2)
 
 Note, an operator can manage 1 or more CRDs, these CRDs are referred to as "APIs" as indicated in the above example. In this example we created
 the kind "mysql" but maybe we can generate other secondary-like crds, e.g. `mysqlconfig` and `mysqllogincreds`. 
