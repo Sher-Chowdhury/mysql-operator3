@@ -139,10 +139,9 @@ go get: added sigs.k8s.io/controller-tools v0.4.1
 
 (git commit no2)
 
-Note, an operator can manage 1 or more CRDs, these CRDs are referred to as "APIs" as indicated in the above example. In this example we created
-the kind "mysql" but maybe we can generate other secondary-like crds, e.g. `mysqlconfig` and `mysqllogincreds`. 
+Note, an operator can manage 1 or more CRDs, these CRD's definitions are stored in the `api/v1alpha1/{crd--name}_types.go` files. In this example we created the kind "mysql" but maybe we can generate other secondary-like crds, e.g. `mysqlconfig` and `mysqllogincreds`. 
 
-each "kind" (aka operand), e.g. mysqlconfig comes with a pair of files:
+each "kind" comes with a pair of files, comes with a pair of files. E.g. if a kind was called `mysqlconfig` then these files would be:
 
 - api/v1alpha1/mysqlconfig_types.go       # *_types.go file is where we define the crd structure 
 - controllers/mysqlconfig_controller.go   # *_controller.go file is where we define what child resources should be created. 
@@ -159,7 +158,7 @@ see:  https://sdk.operatorframework.io/docs/building-operators/golang/quickstart
 Also see: https://sdk.operatorframework.io/docs/building-operators/golang/tutorial/#create-a-new-api-and-controller
 
 
-The above command created the following  file:
+The above command created the following file:
 
 ```
 $ cat api/v1alpha1/mysql_types.go
@@ -182,7 +181,7 @@ limitations under the License.
 package v1alpha1
 
 import (
-        metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
@@ -190,42 +189,42 @@ import (
 
 // MysqlSpec defines the desired state of Mysql
 type MysqlSpec struct {
-        // INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-        // Important: Run "make" to regenerate code after modifying this file
+	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
 
-        // Foo is an example field of Mysql. Edit Mysql_types.go to remove/update
-        Foo string `json:"foo,omitempty"`
+	// Foo is an example field of Mysql. Edit mysql_types.go to remove/update
+	Foo string `json:"foo,omitempty"`
 }
 
 // MysqlStatus defines the observed state of Mysql
 type MysqlStatus struct {
-        // INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-        // Important: Run "make" to regenerate code after modifying this file
+	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
 }
 
-// +kubebuilder:object:root=true
-// +kubebuilder:subresource:status
+//+kubebuilder:object:root=true
+//+kubebuilder:subresource:status
 
 // Mysql is the Schema for the mysqls API
 type Mysql struct {
-        metav1.TypeMeta   `json:",inline"`
-        metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-        Spec   MysqlSpec   `json:"spec,omitempty"`
-        Status MysqlStatus `json:"status,omitempty"`
+	Spec   MysqlSpec   `json:"spec,omitempty"`
+	Status MysqlStatus `json:"status,omitempty"`
 }
 
-// +kubebuilder:object:root=true
+//+kubebuilder:object:root=true
 
 // MysqlList contains a list of Mysql
 type MysqlList struct {
-        metav1.TypeMeta `json:",inline"`
-        metav1.ListMeta `json:"metadata,omitempty"`
-        Items           []Mysql `json:"items"`
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []Mysql `json:"items"`
 }
 
 func init() {
-        SchemeBuilder.Register(&Mysql{}, &MysqlList{})
+	SchemeBuilder.Register(&Mysql{}, &MysqlList{})
 }
 ```
 
