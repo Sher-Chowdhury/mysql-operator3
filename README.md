@@ -465,50 +465,19 @@ packageserver                                   olm          ClusterServiceVersi
 
 olm is a bit like kubernete's version of a package manager, e.g. like yum, dnf, pip...etc, but for kubernetes. Olm is installed by default on openshift clusters. 
 
+If it isn't then you can install it - https://sdk.operatorframework.io/docs/building-operators/golang/quickstart/#olm-deployment
+
 Next we create the bundle image for our operator (https://sdk.operatorframework.io/docs/building-operators/golang/quickstart/):
 
 ```
 $ echo $OPERATOR_IMG
-quay.io/sher_chowdhury0/mysql-operator2:v0.0.1
+quay.io/sher_chowdhury0/mysql-operator3:v0.0.1
 $ make bundle IMG=$OPERATOR_IMG
-
-/Users/sherchowdhury/github/mysql-operator2/mysql-operator2/bin/controller-gen "crd:trivialVersions=true,preserveUnknownFields=false" rbac:roleName=manager-role webhook paths="./..." output:crd:artifacts:config=config/crd/bases
-go: creating new go.mod: module tmp
-Downloading sigs.k8s.io/kustomize/kustomize/v3@v3.8.7
-go: downloading sigs.k8s.io/kustomize/kustomize/v3 v3.8.7
-go: downloading sigs.k8s.io/kustomize/api v0.6.5
-go: downloading sigs.k8s.io/kustomize/cmd/config v0.8.5
-go: downloading k8s.io/client-go v0.18.10
-go: downloading sigs.k8s.io/kustomize/kyaml v0.9.4
-go: downloading k8s.io/apimachinery v0.18.10
-go: downloading github.com/hashicorp/go-multierror v1.1.0
-go: downloading github.com/monochromegane/go-gitignore v0.0.0-20200626010858-205db1a8cc00
-go: downloading k8s.io/kube-openapi v0.0.0-20200410145947-61e04a5be9a6
-go: downloading github.com/yujunz/go-getter v1.4.1-lite
-go: downloading go.starlark.net v0.0.0-20200306205701-8dd3e2ee1dd5
-go: downloading golang.org/x/net v0.0.0-20200625001655-4c5254603344
-go: downloading github.com/qri-io/starlib v0.4.2-0.20200213133954-ff2e8cd5ef8d
-go: downloading github.com/go-openapi/strfmt v0.19.5
-go: downloading k8s.io/api v0.18.10
-go: downloading github.com/go-openapi/validate v0.19.8
-go: downloading go.mongodb.org/mongo-driver v1.1.2
-go: downloading github.com/hashicorp/go-version v1.1.0
-go: downloading github.com/hashicorp/go-safetemp v1.0.0
-go: downloading github.com/mitchellh/go-testing-interface v1.0.0
-go: downloading github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
-go: downloading github.com/go-openapi/errors v0.19.2
-go: downloading github.com/ulikunitz/xz v0.5.5
-go: downloading github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d
-go: downloading github.com/hashicorp/go-cleanhttp v0.5.0
-go: downloading github.com/go-openapi/analysis v0.19.5
-go: downloading github.com/go-openapi/runtime v0.19.4
-go: downloading golang.org/x/sys v0.0.0-20200323222414-85ca7c5b95cd
-go: downloading github.com/go-stack/stack v1.8.0
-go: downloading github.com/go-openapi/loads v0.19.4
+/Users/sherchowdhury/github/mysql-operator3/bin/controller-gen "crd:trivialVersions=true,preserveUnknownFields=false" rbac:roleName=manager-role webhook paths="./..." output:crd:artifacts:config=config/crd/bases
 operator-sdk generate kustomize manifests -q
 
 Display name for the operator (required): 
-> mysql
+> msyql
 
 Description for the operator (required): 
 > install mysql dbs
@@ -517,19 +486,18 @@ Provider's name for the operator (required):
 > mysqlprovider
 
 Any relevant URL for the provider name (optional): 
->       
+> 
 
 Comma-separated list of keywords for your operator (required): 
 > db,mysql
 
 Comma-separated list of maintainers and their emails (e.g. 'name1:email1, name2:email2') (required): 
-> sher.chowdhury@ibm.com
-cd config/manager && /Users/sherchowdhury/github/mysql-operator2/mysql-operator2/bin/kustomize edit set image controller=quay.io/sher_chowdhury0/mysql-operator2:v0.0.1
-/Users/sherchowdhury/github/mysql-operator2/mysql-operator2/bin/kustomize build config/manifests | operator-sdk generate bundle -q --overwrite --version 0.0.1  
-INFO[0000] Building annotations.yaml                    
-INFO[0000] Writing annotations.yaml in /Users/sherchowdhury/github/mysql-operator2/mysql-operator2/bundle/metadata 
-INFO[0000] Building Dockerfile                          
-INFO[0000] Writing bundle.Dockerfile in /Users/sherchowdhury/github/mysql-operator2/mysql-operator2 
+> my.email.address@gmail.com
+cd config/manager && /Users/sherchowdhury/github/mysql-operator3/bin/kustomize edit set image controller=quay.io/sher_chowdhury0/mysql-operator3:v0.0.1
+/Users/sherchowdhury/github/mysql-operator3/bin/kustomize build config/manifests | operator-sdk generate bundle -q --overwrite --version 0.0.1  
+INFO[0001] Creating bundle.Dockerfile                   
+INFO[0001] Creating bundle/metadata/annotations.yaml    
+INFO[0001] Bundle metadata generated suceessfully       
 operator-sdk bundle validate ./bundle
 INFO[0000] Found annotations file                        bundle-dir=bundle container-tool=docker
 INFO[0000] Could not find optional dependencies file     bundle-dir=bundle container-tool=docker
@@ -550,26 +518,64 @@ Changes not staged for commit:
 
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
+        bin/kustomize
         bundle.Dockerfile
         bundle/
-        config/manifests/
-
-no changes added to commit (use "git add" and/or "git commit -a")
+        config/manifests/bases/
 ```
 
-(git commit no4)
-
-This is the point where the clusterserviceversion.yaml got created:
+Like earlier, we have to add the new `bin` folder to to .gitignore
 
 ```
-$ cat config/manifests/bases/mysql-operator2.clusterserviceversion.yaml 
+$ s -lh bin 
+total 133696
+-rwxr-xr-x  1 sherchowdhury  staff    19M 10 Sep 08:56 controller-gen
+-rwxr-xr-x  1 sherchowdhury  staff    46M 17 Sep 15:38 kustomize
+```
+
+Also notice that this is where the `bundle` folder is created:
+
+```
+$ tree bundle 
+bundle
+├── manifests
+│   ├── cache.codingbee.net_mysqls.yaml
+│   ├── mysql-operator3-controller-manager-metrics-service_v1_service.yaml
+│   ├── mysql-operator3-controller-manager_v1_serviceaccount.yaml
+│   ├── mysql-operator3-manager-config_v1_configmap.yaml
+│   ├── mysql-operator3-metrics-reader_rbac.authorization.k8s.io_v1_clusterrole.yaml
+│   └── mysql-operator3.clusterserviceversion.yaml
+├── metadata
+│   └── annotations.yaml
+└── tests
+    └── scorecard
+        └── config.yaml
+
+4 directories, 8 files
+
+```
+
+
+These yaml files in the manifests folder and used to construct the new custerserviceversion.yaml file:
+
+```
+$ tree config/manifests/bases/
+config/manifests/bases/
+└── mysql-operator3.clusterserviceversion.yaml
+```
+
+
+
+
+```
+$ cat config/manifests/bases/mysql-operator3.clusterserviceversion.yaml 
 apiVersion: operators.coreos.com/v1alpha1
 kind: ClusterServiceVersion
 metadata:
   annotations:
     alm-examples: '[]'
     capabilities: Basic Install
-  name: mysql-operator2.v0.0.0
+  name: mysql-operator3.v0.0.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -581,7 +587,7 @@ spec:
       name: mysqls.cache.codingbee.net
       version: v1alpha1
   description: install mysql dbs
-  displayName: mysql
+  displayName: msyql
   icon:
   - base64data: ""
     mediatype: ""
@@ -602,8 +608,8 @@ spec:
   - db
   - mysql
   links:
-  - name: Mysql Operator2
-    url: https://mysql-operator2.domain
+  - name: Mysql Operator3
+    url: https://mysql-operator3.domain
   maturity: alpha
   provider:
     name: mysqlprovider
@@ -628,7 +634,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 images:
 - name: controller
-  newName: quay.io/sher_chowdhury0/mysql-operator2
+  newName: quay.io/sher_chowdhury0/mysql-operator3
   newTag: v0.0.1
 ```
 
@@ -643,73 +649,95 @@ config/manifests
 
 1 directory, 2 files
 
-$ cat config/manifests/kustomization.yaml 
+$ # These resources constitute the fully configured set of manifests
+# used to generate the 'manifests/' directory in a bundle.
 resources:
+- bases/mysql-operator3.clusterserviceversion.yaml
 - ../default
 - ../samples
 - ../scorecard
+
+# [WEBHOOK] To enable webhooks, uncomment all the sections with [WEBHOOK] prefix.
+# Do NOT uncomment sections with prefix [CERTMANAGER], as OLM does not support cert-manager.
+# These patches remove the unnecessary "cert" volume and its manager container volumeMount.
+#patchesJson6902:
+#- target:
+#    group: apps
+#    version: v1
+#    kind: Deployment
+#    name: controller-manager
+#    namespace: system
+#  patch: |-
+#    # Remove the manager container's "cert" volumeMount, since OLM will create and mount a set of certs.
+#    # Update the indices in this path if adding or removing containers/volumeMounts in the manager's Deployment.
+#    - op: remove
+#      path: /spec/template/spec/containers/1/volumeMounts/0
+#    # Remove the "cert" volume, since OLM will create and mount a set of certs.
+#    # Update the indices in this path if adding or removing volumes in the manager's Deployment.
+#    - op: remove
+#      path: /spec/template/spec/volumes/0
 ```
 
 These paths seems to refer to:
 
 ```
-$ ls -l config
+$ ls -l config 
 total 0
-drwx------   5 sherchowdhury  staff  160  9 Apr 10:31 certmanager
-drwx------   6 sherchowdhury  staff  192  9 Apr 11:02 crd
-drwx------   5 sherchowdhury  staff  160  9 Apr 10:31 default              <==
-drwx------   5 sherchowdhury  staff  160  9 Apr 10:31 manager
-drwxr-xr-x   4 sherchowdhury  staff  128  9 Apr 13:03 manifests
-drwx------   4 sherchowdhury  staff  128  9 Apr 10:31 prometheus
-drwx------  13 sherchowdhury  staff  416  9 Apr 11:02 rbac
-drwx------   4 sherchowdhury  staff  128  9 Apr 10:44 samples              <==
-drwxr-xr-x   5 sherchowdhury  staff  160  9 Apr 10:31 scorecard            <==
+drwxr-xr-x   6 sherchowdhury  staff  192 17 Sep 15:23 crd
+drwxr-xr-x   5 sherchowdhury  staff  160 10 Sep 08:56 default         <==
+drwxr-xr-x   5 sherchowdhury  staff  160 10 Sep 08:56 manager
+drwxr-xr-x   4 sherchowdhury  staff  128 17 Sep 15:42 manifests
+drwxr-xr-x   4 sherchowdhury  staff  128 10 Sep 08:56 prometheus
+drwxr-xr-x  14 sherchowdhury  staff  448 17 Sep 15:23 rbac
+drwxr-xr-x   4 sherchowdhury  staff  128 10 Sep 08:56 samples         <==
+drwxr-xr-x   5 sherchowdhury  staff  160 10 Sep 08:56 scorecard       <==
 ```
+
+
+(git commit no4)
+
 
 Next we create the bundle image and push it up (https://sdk.operatorframework.io/docs/building-operators/golang/quickstart/):
 
 ```
-$ # Note the "-bundle" component in the image name below.
-$ export BUNDLE_IMG="quay.io/sher_chowdhury0/mysql-operator2-bundle:v0.0.1"
+$ export IMAGE_TAG_BASE=quay.io/sher_chowdhury0/mysql-operator3
+$ make bundle-build
 
-$ make bundle-build BUNDLE_IMG=$BUNDLE_IMG               
+$ docker build -f bundle.Dockerfile -t quay.io/sher_chowdhury0/mysql-operator3-bundle:v0.0.1 .
+[+] Building 0.1s (7/7) FINISHED                                                                      
+ => [internal] load build definition from bundle.Dockerfile                                      0.0s
+ => => transferring dockerfile: 44B                                                              0.0s
+ => [internal] load .dockerignore                                                                0.0s
+ => => transferring context: 35B                                                                 0.0s
+ => [internal] load build context                                                                0.0s
+ => => transferring context: 820B                                                                0.0s
+ => CACHED [1/3] COPY bundle/manifests /manifests/                                               0.0s
+ => CACHED [2/3] COPY bundle/metadata /metadata/                                                 0.0s
+ => CACHED [3/3] COPY bundle/tests/scorecard /tests/scorecard/                                   0.0s
+ => exporting to image                                                                           0.0s
+ => => exporting layers                                                                          0.0s
+ => => writing image sha256:e62a0074849cdd4cc3ff87eb45046ab679ee4ee28ba6a9ed4101d6727e8639bd     0.0s
+ => => naming to quay.io/sher_chowdhury0/mysql-operator3-bundle:v0.0.1                           0.0s
 
-docker build -f bundle.Dockerfile -t quay.io/sher_chowdhury0/mysql-operator2-bundle:v0.0.1 .
-[+] Building 0.2s (7/7) FINISHED                                                                                          
- => [internal] load build definition from bundle.Dockerfile                                                          0.0s
- => => transferring dockerfile: 44B                                                                                  0.0s
- => [internal] load .dockerignore                                                                                    0.0s
- => => transferring context: 35B                                                                                     0.0s
- => [internal] load build context                                                                                    0.0s
- => => transferring context: 727B                                                                                    0.0s
- => CACHED [1/3] COPY bundle/manifests /manifests/                                                                   0.0s
- => CACHED [2/3] COPY bundle/metadata /metadata/                                                                     0.0s
- => CACHED [3/3] COPY bundle/tests/scorecard /tests/scorecard/                                                       0.0s
- => exporting to image                                                                                               0.0s
- => => exporting layers                                                                                              0.0s
- => => writing image sha256:92526e73c1cca5140b8c6113be4d9dbb05cb797eef6ce0d7db7255e2395c60c8                         0.0s
- => => naming to quay.io/sher_chowdhury0/mysql-operator2-bundle:v0.0.1                                               0.0s
+Use 'docker scan' to run Snyk tests against images to find vulnerabilities and learn how to fix them
 ```
 
-This updates the `bundle/manifests/cache.codingbee.net_mysqls.yaml` file to reflect any crd changes. 
+Then push the image:
 
-
-Now push up the bundle image:
-
+```
+$ export IMAGE_TAG_BASE=quay.io/sher_chowdhury0/mysql-operator3
+$ make bundle-push                                  
+/Library/Developer/CommandLineTools/usr/bin/make docker-push IMG=quay.io/sher_chowdhury0/mysql-operator3-bundle:v0.0.1
+docker push quay.io/sher_chowdhury0/mysql-operator3-bundle:v0.0.1
+The push refers to repository [quay.io/sher_chowdhury0/mysql-operator3-bundle]
+51f24041f275: Pushed 
+511ce587628d: Pushed 
+d8f850399730: Pushed 
+v0.0.1: digest: sha256:c18d39b34ec92426afb55d7901c54421190ec2b4989b930b49b15dccbc288024 size: 939
 ```
 
 
-$ make docker-push IMG=$BUNDLE_IMG
-
-docker push quay.io/sher_chowdhury0/mysql-operator2-bundle:v0.0.1
-The push refers to repository [quay.io/sher_chowdhury0/mysql-operator2-bundle]
-d02927543e04: Pushed 
-9f25142cbc88: Pushed 
-7fdabab67fdf: Pushed 
-v0.0.1: digest: sha256:aebdf842a4c5da68535a3fb9271e711820fe8f90422a265936ee66da26637ade size: 939 
-```
-
-This bundle image is specific to the version of the operator in question. When you install the operator into your namespace, the operator's catalogsource pod works out which bundle image you need, pulls down that bundle image and run's a pod-job with that bundle image. This job is what installs the operator into your namespace. by installing I mean, creating the serviceaccount, role, rolebinding, and deployment resources in your namespace. 
+This bundle image is specific to the version of the operator in question. When you install the operator (via the operatorhub page on RH ui) into your namespace, the operator's catalogsource pod works out which bundle image you need, pulls down that bundle image and run's a pod-job with that bundle image. This job is what installs the operator into your namespace. by installing I mean, creating the serviceaccount, role, rolebinding, and deployment resources in your namespace. 
 
 
 Now in order to do the next part, go to the quay.io web console, and for each operator and bundle repo, go to repo's settings and make them public. 
